@@ -1,0 +1,41 @@
+spring:
+  application:
+    name: product-service
+
+  datasource:
+    username: postgres
+    password: admin
+    url: jdbc:postgresql://localhost:5436/inventorydb
+    driver-class-name: org.postgresql.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      maximum-pool-size: 8
+      minimum-idle: 2
+      idle-timeout: 600000
+      connection-timeout: 30000
+      max-lifetime: 1800000
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: false
+
+  rabbitmq:
+    listener:
+      simple:
+        acknowledge-mode: auto
+        retry:
+          enabled: true
+          initial-interval: 2s
+          multiplier: 2.0
+          max-interval: 10s
+          max-attempts: 5
+        default-requeue-rejected: false
+
+
+server:
+  port: 8085
+  servlet:
+    context-path: /api/
