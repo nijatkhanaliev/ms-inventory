@@ -31,7 +31,7 @@ public class Product {
     private String name;
     private String description;
 
-    @Column(nullable = false, precision = 10, scale = 2)
+    @Column(nullable = false)
     private BigDecimal price;
 
     @Column(nullable = false)
@@ -39,11 +39,12 @@ public class Product {
 
     private boolean active;
 
-    @Column(nullable = false, updatable = false)
     @CreationTimestamp
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
+    @Column(nullable = false)
     private LocalDateTime updatedAt;
 
     @PrePersist
