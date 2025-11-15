@@ -1,4 +1,4 @@
-package com.company.model.dto;
+package com.company.common;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;

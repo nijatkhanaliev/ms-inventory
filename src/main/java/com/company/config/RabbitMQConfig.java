@@ -11,83 +11,52 @@ import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import static com.company.model.constant.RabbitConstant.STOCK_QUEUE;
+import static com.company.model.constant.RabbitConstant.STOCK_ROUTING_KEY;
+import static com.company.model.constant.RabbitConstant.STOCK_EXCHANGE;
+
 @Configuration
 public class RabbitMQConfig {
 
-    public static final String ORDER_CREATED_QUEUE = "order-created-queue";
-    public static final String PAYMENT_FAILED_QUEUE = "payment-failed-queue";
-    public static final String ORDER_EXCHANGE = "order-exchange";
-    public static final String ORDER_ROUTING_KEY = "order.created";
-    public static final String STOCK_UPDATED_ROUTING_KEY = "stock.updated";
-    public static final String PAYMENT_FAILED_ROUTING_KEY = "payment.failed";
-    public static final String STOCK_FAILED_ROUTING_KEY = "stock.failed";
-    public static final String ORDER_PAYMENT_FAILED_ROUTING_KEY = "order.payment.failed";
+    public static final String X_DEAD_LETTER_EXCHANGE = "x-dead-letter-exchange";
+    public static final String X_DEAD_LETTER_ROUTING_KEY = "x-dead-letter-routing-key";
 
     @Bean
-    public Queue orderQueue() {
-        return QueueBuilder.durable(ORDER_CREATED_QUEUE)
-                .withArgument("x-dead-letter-exchange", ORDER_EXCHANGE + ".dlx")
-                .withArgument("x-dead-letter-routing-key", ORDER_ROUTING_KEY + ".dlq")
+    public Queue stockQueue() {
+        return QueueBuilder.durable(STOCK_QUEUE)
+                .withArgument(X_DEAD_LETTER_EXCHANGE , STOCK_EXCHANGE + ".dlx")
+                .withArgument(X_DEAD_LETTER_ROUTING_KEY, STOCK_ROUTING_KEY + ".dlq")
                 .build();
     }
 
     @Bean
-    public Queue orderDLQ() {
-        return QueueBuilder.durable(ORDER_CREATED_QUEUE + ".dlq").build();
+    public Queue stockDLQ() {
+        return QueueBuilder.durable(STOCK_QUEUE + ".dlq").build();
     }
-
-    @Bean
-    public Queue paymentFailedQueue() {
-        return QueueBuilder.durable(PAYMENT_FAILED_QUEUE)
-                .withArgument("x-dead-letter-exchange", ORDER_EXCHANGE + ".dlx")
-                .withArgument("x-dead-letter-routing-key", PAYMENT_FAILED_ROUTING_KEY + ".dlq")
-                .build();
-    }
-
-    @Bean
-    public Queue paymentFailedDLQ() {
-        return QueueBuilder.durable(PAYMENT_FAILED_QUEUE + ".dlq").build();
-    }
-
 
     @Bean
     public TopicExchange deadLetterExchange() {
-        return new TopicExchange(ORDER_EXCHANGE + ".dlx");
+        return new TopicExchange(STOCK_EXCHANGE + ".dlx");
     }
 
     @Bean
-    public TopicExchange orderExchange() {
-        return new TopicExchange(ORDER_EXCHANGE);
+    public TopicExchange stockExchange() {
+        return new TopicExchange(STOCK_EXCHANGE);
     }
 
     @Bean
-    public Binding bindingOrder(Queue orderQueue, TopicExchange orderExchange) {
-        return BindingBuilder.bind(orderQueue)
-                .to(orderExchange)
-                .with(ORDER_ROUTING_KEY);
+    public Binding bindingOrderCreated(Queue stockQueue, TopicExchange stockExchange) {
+        return BindingBuilder.bind(stockQueue)
+                .to(stockExchange)
+                .with(STOCK_ROUTING_KEY);
     }
 
     @Bean
-    public Binding bindingOrderDLQ(Queue orderDLQ, TopicExchange deadLetterExchange) {
-        return BindingBuilder.bind(orderDLQ)
+    public Binding bindingOrderDLQ(Queue stockDLQ, TopicExchange deadLetterExchange) {
+        return BindingBuilder.bind(stockDLQ)
                 .to(deadLetterExchange)
-                .with(ORDER_ROUTING_KEY + ".dlq");
+                .with(STOCK_ROUTING_KEY + ".dlq");
     }
-
-    @Bean
-    public Binding bindingPaymentFailedQueue(Queue paymentFailedQueue, TopicExchange orderExchange) {
-        return BindingBuilder.bind(paymentFailedQueue)
-                .to(orderExchange)
-                .with(PAYMENT_FAILED_ROUTING_KEY);
-    }
-
-    @Bean
-    public Binding bindingPaymentFailedDLQ(Queue paymentFailedDLQ, TopicExchange deadLetterExchange) {
-        return BindingBuilder.bind(paymentFailedDLQ)
-                .to(deadLetterExchange)
-                .with(PAYMENT_FAILED_ROUTING_KEY + ".dlq");
-    }
-
 
     @Bean
     public Jackson2JsonMessageConverter jackson2JsonMessageConverter() {

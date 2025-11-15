@@ -2,7 +2,7 @@ package com.company.exception.handler;
 
 import com.company.exception.InsufficientStockException;
 import com.company.exception.NotFoundException;
-import com.company.model.dto.ExceptionResponse;
+import com.company.common.ExceptionResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;

@@ -1,6 +1,6 @@
 package com.company.controller;
 
-import com.company.model.dto.PageResponse;
+import com.company.common.PageResponse;
 import com.company.model.dto.request.ProductRequest;
 import com.company.model.dto.response.ProductResponse;
 import com.company.service.ProductService;
